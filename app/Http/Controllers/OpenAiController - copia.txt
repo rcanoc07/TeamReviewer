@@ -1,0 +1,145 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class OpenaiController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+
+
+
+    public function corregirRubrica(Request $request)
+    {
+        // Validar los datos de entrada
+        $request->validate([
+            'alumno_id' => 'required|exists:users,id', // Asegura que el alumno exista
+            'rubrica_id' => 'required|exists:rubricas,id', // Asegura que la rúbrica exista
+            'archivo' => 'required|file|mimes:txt', // Asegura que sea un archivo TXT
+        ]);
+
+        // Leer el contenido del archivo TXT
+        $contenido = file_get_contents($request->file('archivo')->path());
+
+        if (empty($contenido)) {
+            return response()->json(['error' => 'El archivo está vacío'], 400);
+        }
+
+        // Crear cliente de OpenAI
+        $client = Client::create(env('OPENAI_API_KEY'));
+
+        try {
+            // Preparar el prompt para OpenAI
+            $prompt = "A continuación te proporciono el contenido de una rúbrica. Por favor, corrígela y proporciona una puntuación del 1 al 10, así como comentarios y detalles de la corrección:\n\n";
+            $prompt .= $contenido;
+
+            // Realizar solicitud a la API de OpenAI
+            $response = $client->chat()->create([
+                'model' => 'gpt-3.5-turbo', // O usa 'gpt-4' si tienes acceso
+                'messages' => [
+                    ['role' => 'system', 'content' => 'Eres un asistente útil que corrige rúbricas educativas.'],
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+            ]);
+
+            // Obtener la respuesta de OpenAI
+            $respuestaCorregida = $response['choices'][0]['message']['content'];
+
+            // Extraer la puntuación y los comentarios (esto puede variar según el formato de respuesta de OpenAI)
+            $puntuacion = $this->extraerPuntuacion($respuestaCorregida); // Método para extraer la puntuación
+            $comentarios = $this->extraerComentarios($respuestaCorregida); // Método para extraer los comentarios
+
+            // Crear una nueva corrección en la base de datos
+            $correccion = Correccion::create([
+                'alumno_id' => $request->alumno_id,
+                'rubrica_id' => $request->rubrica_id,
+                'puntuacion' => $puntuacion,
+                'comentarios' => $comentarios,
+                'detalles_correccion' => json_encode(['respuesta' => $respuestaCorregida]), // Almacena la respuesta completa
+            ]);
+
+            // Devolver la respuesta corregida y la corrección creada
+            return response()->json([
+                'respuesta_corregida' => $respuestaCorregida,
+                'correccion' => $correccion,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error en la API: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Método para extraer la puntuación de la respuesta de OpenAI.
+     */
+    private function extraerPuntuacion($respuesta)
+    {
+        // Aquí puedes implementar lógica para extraer la puntuación (ej: buscar un número del 1 al 10)
+        preg_match('/\b(\d{1,2})\b/', $respuesta, $matches);
+        return $matches[1] ?? 0; // Devuelve 0 si no se encuentra una puntuación
+    }
+
+    /**
+     * Método para extraer los comentarios de la respuesta de OpenAI.
+     */
+    private function extraerComentarios($respuesta)
+    {
+        // Aquí puedes implementar lógica para extraer los comentarios
+        return $respuesta; // Por defecto, devuelve toda la respuesta como comentarios
+    }
+
+}

@@ -13,6 +13,11 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+    public function correcciones()
+    {
+        return $this->hasMany(Correccion::class, 'alumno_id');
+    }
+
     /**
      * The attributes that are mass assignable.
      *

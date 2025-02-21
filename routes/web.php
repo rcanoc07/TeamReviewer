@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AmigoController;
+use App\Http\Controllers\CorreccionController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\GrupoAmigoController;
 use App\Http\Controllers\GrupoController;
+use App\Http\Controllers\OpenAiController;
 use App\Http\Controllers\RubricaController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Auth;
@@ -108,3 +110,10 @@ Route::resource('rubricas', RubricaController::class)->middleware('auth');
 use App\Http\Controllers\UserController;
 
 Route::post('/user/{id}/assign-role', [UserController::class, 'assignRoleToUser']);
+
+
+
+// GINES
+Route::get('/rubricas/{id}/responder', [RubricaController::class, 'responder'])->name('rubricas.responder');
+Route::post('/rubricas/{id}/responder', [OpenAiController::class, 'corregirRespuesta'])->name('rubricas.corregir');
+Route::get('/correcciones/{id}', [CorreccionController::class, 'show'])->name('correcciones.show');

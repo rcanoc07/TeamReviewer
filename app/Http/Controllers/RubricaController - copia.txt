@@ -121,10 +121,4 @@ class RubricaController extends Controller
         $rubrica->delete();
         return redirect()->route('rubricas.index')->with('success', 'Rúbrica eliminada.');
     }
-
-    public function responder($id)
-    {
-        $rubrica = Rubrica::findOrFail($id);
-        return view('rubricas.responder', compact('rubrica'));
-    }
 }

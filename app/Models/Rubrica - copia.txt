@@ -9,11 +9,6 @@ class Rubrica extends Model
 {
     use HasFactory;
 
-    public function correcciones()
-    {
-        return $this->hasMany(Correccion::class);
-    }
-
     // Definir qué campos pueden ser asignados masivamente
     protected $fillable = [
         'codigo',
