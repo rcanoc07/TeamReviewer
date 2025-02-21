@@ -43,8 +43,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-}
+    /**
+     * Relación: Un profesor puede crear muchas clases.
+     */
+    public function clasesProfesor() {
+        return $this->hasMany(Clase::class, 'profesor_id');
+    }
 
-/**
- * Ahora usamos attach, detach y sync para tratar con la tabla pivote
- */
+    /**
+     * Relación: Un alumno puede estar en muchas clases.
+     */
+    public function clasesAlumno() {
+        return $this->belongsToMany(Clase::class, 'clase_user');
+    }
+}

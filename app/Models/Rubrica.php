@@ -9,10 +9,10 @@ class Rubrica extends Model
 {
     use HasFactory;
 
-    // Definir qué campos pueden ser asignados masivamente
     protected $fillable = [
         'codigo',
         'user_id',
+        'clase_id', // Nueva columna
         'titulo',
         'descripcion',
         'claridad',
@@ -21,7 +21,6 @@ class Rubrica extends Model
         'preguntas'
     ];
 
-    // Castear el campo 'preguntas' para que se maneje como un array automáticamente
     protected $casts = [
         'preguntas' => 'array',
     ];
@@ -29,5 +28,10 @@ class Rubrica extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function clase()
+    {
+        return $this->belongsTo(Clase::class);
     }
 }

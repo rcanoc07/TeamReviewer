@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clase;
 use Illuminate\Http\Request;
 use App\Models\Rubrica;
 use Illuminate\Support\Facades\Auth;
@@ -20,47 +21,49 @@ class RubricaController extends Controller
     /**
      * Muestra el formulario para crear una nueva rúbrica.
      */
-    public function create()
+    public function create(Clase $clase)
     {
-        return view('rubricas.create');
+        return view('rubricas.create', compact('clase'));
     }
+
+
 
     /**
      * Guarda una nueva rúbrica en la base de datos.
      */
     public function store(Request $request)
     {
-        // Validación de los datos
-        $request->validate([
-            'codigo' => 'required|string|max:255',
-            'titulo' => 'required|string|max:255',
-            'descripcion' => 'required|string',
+        $data = $request->validate([
+            'codigo' => 'required|unique:rubricas',
+            'titulo' => 'required',
+            'descripcion' => 'required',
             'claridad' => 'required|boolean',
             'comentario' => 'required|boolean',
             'num_preguntas' => 'required|integer|min:1',
-            'preguntas' => 'required|array|min:1',
-            'preguntas.*.pregunta' => 'required|string',
-            'preguntas.*.puntuacion' => 'required|integer|min:0',
+            'preguntas' => 'required|array',
+            'clase_id' => 'required|exists:clases,id', // Validar que el clase_id existe
         ]);
 
-        // Recoger las preguntas en un formato adecuado
-        $preguntas = $request->preguntas;
+        // Obtener el user_id del usuario autenticado
+        $user_id = auth()->user()->id;
 
-        // Crear una nueva rúbrica
-        $rubrica = new Rubrica();
-        $rubrica->user_id = Auth::id();
-        $rubrica->codigo = $request->codigo;
-        $rubrica->titulo = $request->titulo;
-        $rubrica->descripcion = $request->descripcion;
-        $rubrica->claridad = $request->claridad;
-        $rubrica->comentario = $request->comentario;
-        $rubrica->num_preguntas = $request->num_preguntas;
-        $rubrica->preguntas = json_encode($preguntas);  // Almacenar preguntas como JSON
-        $rubrica->save();  // Guardar la rúbrica en la base de datos
+        // Crear la rubrica asociada a la clase y con el usuario autenticado
+        $rubrica = Rubrica::create([
+            'codigo' => $data['codigo'],
+            'titulo' => $data['titulo'],
+            'descripcion' => $data['descripcion'],
+            'claridad' => $data['claridad'],
+            'comentario' => $data['comentario'],
+            'num_preguntas' => $data['num_preguntas'],
+            'preguntas' => json_encode($data['preguntas']),
+            'clase_id' => $data['clase_id'],  // Guardar la relación con la clase
+            'user_id' => $user_id,  // Guardar el user_id del profesor
+        ]);
 
-        // Redirigir al listado de rúbricas o mostrar un mensaje de éxito
-        return redirect()->route('rubricas.index')->with('success', 'Rúbrica creada correctamente.');
+        return redirect()->route('clases.show', $data['clase_id']);
     }
+
+
 
 
 
@@ -75,11 +78,13 @@ class RubricaController extends Controller
     /**
      * Muestra el formulario para editar una rúbrica.
      */
-    public function edit($id)
+    public function edit(Rubrica $rubrica, Clase $clase)
     {
-        $rubrica = Rubrica::findOrFail($id);
-        return view('rubricas.edit', compact('rubrica'));
+        // Aquí puedes hacer lo que necesites, como cargar la rubrica
+        // y asociarla a la clase
+        return view('rubricas.edit', compact('rubrica', 'clase'));
     }
+
 
     public function update(Request $request, $id)
     {

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AmigoController;
+use App\Http\Controllers\ClaseController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\GrupoAmigoController;
 use App\Http\Controllers\GrupoController;
@@ -100,11 +101,28 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 //Rubricas
+// Ruta para crear rubrica asociada a una clase
+Route::get('rubrica/create/{clase}', [RubricaController::class, 'create'])->name('rubricas.create');
+Route::get('/rubrica/{rubrica}/edit/{clase}', [RubricaController::class, 'edit'])->name('rubricas.edit');
 Route::resource('rubricas', RubricaController::class)->middleware('auth');
 
 
 
 // ROLES
-use App\Http\Controllers\UserController;
 
-Route::post('/user/{id}/assign-role', [UserController::class, 'assignRoleToUser']);
+Route::post('/user/{id}/assign-role', [UsuarioController::class, 'assignRoleToUser']);
+
+
+
+// CLASES
+Route::middleware(['auth'])->group(function () {
+    Route::get('/clases/{clase}/edit', [ClaseController::class, 'edit'])->name('clases.edit'); // Formulario de edición
+    Route::put('/clases/{clase}', [ClaseController::class, 'update'])->name('clases.update'); // Actualizar clase
+
+    Route::get('/clases', [ClaseController::class, 'index'])->name('clases.index'); // Lista de clases
+    Route::get('/clases/create', [ClaseController::class, 'create'])->name('clases.create'); // Formulario para crear clase
+    Route::post('/clases', [ClaseController::class, 'store'])->name('clases.store'); // Guardar nueva clase
+    Route::get('/clases/{clase}', [ClaseController::class, 'show'])->name('clases.show'); // Ver una clase
+    Route::post('/clases/{clase}/join', [ClaseController::class, 'join'])->name('clases.join'); // Unirse a una clase
+    Route::delete('/clases/{clase}', [ClaseController::class, 'destroy'])->name('clases.destroy'); // Eliminar clase
+});

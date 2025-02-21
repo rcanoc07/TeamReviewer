@@ -42,6 +42,10 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('rubricas.index') }}">Rúbricas</a>
                         </li>
+                        <!-- Agregar enlace a las rúbricas -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('clases.index') }}">Clases</a>
+                        </li>
                     @endif
                 </ul>
 

@@ -4,14 +4,11 @@
 
 @section('content')
     <div class="card">
-        <div class="card-header">Editar Rúbrica para la clase: {{ $rubrica->clase->nombre }}</div>
+        <div class="card-header">Editar Rúbrica</div>
         <div class="card-body">
-            <form action="{{ route('rubricas.update', $rubrica) }}" method="POST">
+            <form action="{{ route('rubricas.update', $rubrica->id) }}" method="POST">
                 @csrf
                 @method('PUT')
-
-                <!-- Campo oculto para clase_id -->
-                <input type="hidden" name="clase_id" value="{{ $rubrica->clase->id }}">
 
                 <div class="mb-3">
                     <label for="codigo" class="form-label">Código de la Rúbrica</label>
@@ -46,22 +43,22 @@
 
                 <div class="mb-3">
                     <label for="num_preguntas" class="form-label">Número de Preguntas</label>
-                    <input type="number" class="form-control" id="num_preguntas" name="num_preguntas" value="{{ old('num_preguntas', $rubrica->num_preguntas) }}" min="1" required>
+                    <input type="number" class="form-control" id="num_preguntas" name="num_preguntas" min="1" value="{{ old('num_preguntas', $rubrica->num_preguntas) }}" required>
                 </div>
 
                 <div id="preguntas_fields">
                     @foreach(json_decode($rubrica->preguntas) as $index => $pregunta)
                         <div class="mb-3">
                             <label for="preguntas_{{ $index }}_pregunta" class="form-label">Pregunta {{ $index + 1 }}</label>
-                            <input type="text" class="form-control" id="preguntas_{{ $index }}_pregunta" name="preguntas[{{ $index }}][pregunta]" value="{{ $pregunta->pregunta }}" required>
+                            <input type="text" class="form-control" id="preguntas_{{ $index }}_pregunta" name="preguntas[{{ $index }}][pregunta]" value="{{ old('preguntas.' . $index . '.pregunta', $pregunta->pregunta) }}" required>
 
                             <label for="preguntas_{{ $index }}_puntuacion" class="form-label">Puntuación {{ $index + 1 }}</label>
-                            <input type="number" class="form-control" id="preguntas_{{ $index }}_puntuacion" name="preguntas[{{ $index }}][puntuacion]" value="{{ $pregunta->puntuacion }}" min="0" required>
+                            <input type="number" class="form-control" id="preguntas_{{ $index }}_puntuacion" name="preguntas[{{ $index }}][puntuacion]" min="0" value="{{ old('preguntas.' . $index . '.puntuacion', $pregunta->puntuacion) }}" required>
                         </div>
                     @endforeach
                 </div>
 
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <button type="submit" class="btn btn-primary">Actualizar Rúbrica</button>
             </form>
         </div>
     </div>
@@ -70,9 +67,10 @@
         document.getElementById('num_preguntas').addEventListener('input', function() {
             const numPreguntas = parseInt(this.value);
             const container = document.getElementById('preguntas_fields');
-            container.innerHTML = '';  // Limpiar campos previos
+            const existingQuestions = container.querySelectorAll('.mb-3').length;
 
-            for (let i = 0; i < numPreguntas; i++) {
+            // Limpiar campos previos
+            for (let i = existingQuestions; i < numPreguntas; i++) {
                 const preguntaDiv = document.createElement('div');
                 preguntaDiv.classList.add('mb-3');
                 preguntaDiv.innerHTML = `
@@ -83,6 +81,11 @@
                     <input type="number" class="form-control" id="preguntas_${i}_puntuacion" name="preguntas[${i}][puntuacion]" min="0" required>
                 `;
                 container.appendChild(preguntaDiv);
+            }
+
+            // Eliminar preguntas extra si se reduce el número
+            for (let i = numPreguntas; i < existingQuestions; i++) {
+                container.removeChild(container.lastChild);
             }
         });
     </script>

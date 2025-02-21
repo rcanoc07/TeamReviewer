@@ -10,8 +10,6 @@
             </div>
         @endif
 
-        <a href="{{ route('rubricas.create') }}" class="btn btn-primary mb-3">Crear Nueva Rúbrica</a>
-
         <table class="table table-striped">
             <thead>
             <tr>

@@ -12,6 +12,7 @@ class CreateRubricasTable extends Migration
         Schema::create('rubricas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Relación con users
+            $table->foreignId('clase_id')->constrained('clases')->onDelete('cascade'); // Relación con clases
             $table->string('codigo')->unique();
             $table->string('titulo');
             $table->text('descripcion');
