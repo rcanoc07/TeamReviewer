@@ -35,20 +35,39 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto">
                     @if(auth()->user()->hasRole('admin'))
+                        <!-- Todos los cursos existentes -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Clases</a>
+                            <a class="nav-link" href="#">Cursos</a>
                         </li>
+                        <!-- Todos los profesores registrados y también la posibilidad de crear un usuario (profesor) -->
                         <li class="nav-item">
                             <a class="nav-link" href="#">Profesores</a>
                         </li>
+                        <!-- Todos los alumnos registrados -->
                         <li class="nav-item">
                             <a class="nav-link" href="#">Alumnos</a>
                         </li>
-                    @endif
-                    @if(auth()->user()->hasRole('profesor'))
+                    @elseif(auth()->user()->hasRole('profesor'))
+                        <!-- Formulario para crear un nuevo curso -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Crear curso</a>
+                        </li>
+                        <!-- Listado de todos los cursos en la base de datos -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Mis cursos</a>
+                        </li>
                         <!-- Agregar enlace a las rúbricas -->
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('rubricas.index') }}">Rúbricas</a>
+                        </li>
+                    @elseif(auth()->user()->hasRole('alumno'))
+                        <!-- Área personal del alumno, para ver los cursos en los que está registrado -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Área personal</a>
+                        </li>
+                        <!-- Todos los cursos que se encuentran en la aplicación -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Cursos</a>
                         </li>
                     @endif
                 </ul>
