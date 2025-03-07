@@ -17,10 +17,7 @@
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- Agregar tu archivo CSS aquí -->
-    <link rel="stylesheet" href="{{ asset('css/styles.css') }}"> <!-- Esta línea -->
-
-    <!-- Scripts -->
-    {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
 </head>
 
 <body>
@@ -28,7 +25,7 @@
     <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">
-                {{ config('app.name', 'Laravel') }}
+                {{ config('app.name', 'TeamReviewer') }}
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                 <span class="navbar-toggler-icon"></span>
@@ -37,6 +34,17 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto">
+                    @if(auth()->user()->hasRole('admin'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Clases</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Profesores</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Alumnos</a>
+                        </li>
+                    @endif
                     @if(auth()->user()->hasRole('profesor'))
                         <!-- Agregar enlace a las rúbricas -->
                         <li class="nav-item">
@@ -67,10 +75,13 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">
+                                    {{ __('Mi cuenta') }}
+                                </a>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
+                                    {{ __('Cerrar sesión') }}
                                 </a>
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
