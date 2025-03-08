@@ -18,9 +18,12 @@
 
     <!-- Agregar tu archivo CSS aquí -->
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+
+    <!-- Iconos de Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100"> <!-- Cambio 1: Flexbox en el body -->
 <div id="app">
     <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
         <div class="container">
@@ -114,7 +117,7 @@
         </div>
     </nav>
 
-    <main class="py-4">
+    <main class="flex-grow-1 py-4"> <!-- Cambio 2: flex-grow-1 para ocupar espacio restante -->
         @yield('content')
     </main>
 </div>
