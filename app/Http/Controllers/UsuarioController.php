@@ -13,18 +13,29 @@ class UsuarioController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index($tipo)
+    public function index(Request $request, $tipo)
     {
-        if (!in_array($tipo, ['alumno', 'profesor'])) {
-            abort(404);
-        }
+        // Filtrar usuarios según el tipo (alumno o profesor)
+        $search = $request->input('search'); // Obtener el valor de búsqueda
+        $direction = $request->query('direction', 'asc'); // Obtener la dirección de orden (asc o desc)
 
-        $usuarios = User::whereHas('roles', function ($query) use ($tipo) {
-            $query->where('name', $tipo);
-        })->get();
+        // Filtrar usuarios por rol y búsqueda
+        $usuarios = User::when($tipo, function ($query) use ($tipo) {
+            return $query->whereHas('roles', function ($query) use ($tipo) {
+                $query->where('name', $tipo);  // Filtrar por el nombre del rol
+            });
+        })
+            ->when($search, function ($query) use ($search) {
+                return $query->where('name', 'like', '%' . $search . '%');  // Filtro por nombre
+            })
+            ->orderBy('name', $direction)  // Ordenar por nombre, ascendente o descendente
+            ->get();
 
-        return view('usuarios.index', ['usuarios' => $usuarios, 'tipo' => $tipo]);
+        return view('usuarios.index', compact('usuarios', 'tipo'));
     }
+
+
+
 
     /**
      * Show the form for creating a new resource.
