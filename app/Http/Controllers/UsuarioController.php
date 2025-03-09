@@ -69,17 +69,7 @@ class UsuarioController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+
 
     /**
      * Remove the specified resource from storage.
@@ -93,4 +83,35 @@ class UsuarioController extends Controller
         User::find($id)->delete();
         return back();
     }
+
+    public function perfil()
+    {
+        return view('usuarios.perfil');
+    }
+
+    // Método para actualizar el perfil del usuario autenticado
+    public function updatePerfil(Request $request)
+    {
+        // Validar los datos entrantes de manera condicional
+        $validated = $request->validate([
+            'name' => 'nullable|string|max:255', // Permitir nombre vacío si no se cambia
+            'email' => 'nullable|email|max:255|unique:users,email,' . auth()->id(), // Permitir email vacío si no se cambia
+        ]);
+
+        $user = auth()->user();
+
+        if ($request->filled('name')) {
+            $user->name = $request->name;
+        }
+
+        if ($request->filled('email')) {
+            $user->email = $request->email;
+        }
+
+        $user->save();
+
+        return redirect()->route('perfil')->with('status', 'Perfil actualizado correctamente.');
+    }
+
+
 }

@@ -64,6 +64,10 @@ Route::get('about', function () {
 Route::get('borrarusuario/{id}', [UsuarioController::class, "destroy"])->name("borrarusu");
 Route::get('cambiarrol/{id}', [UsuarioController::class, "cambiarRol"])->name("cambiarrol");
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/perfil', [UsuarioController::class, 'perfil'])->name('perfil');
+    Route::put('/perfil', [UsuarioController::class, 'updatePerfil'])->name('perfil.update');
+});
 
 
 //**********************************************************************************************************//
