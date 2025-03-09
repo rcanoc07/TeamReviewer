@@ -11,7 +11,7 @@ class CreateCursosTable extends Migration
     {
         Schema::create('cursos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Relación con profesor (usuario)
+            $table->foreignId('profesor')->constrained('users')->onDelete('cascade'); // Relación con profesor (usuario)
             $table->string('titulo');
             $table->text('descripcion');
             $table->string('codigo')->unique(); // Código para que los alumnos se registren

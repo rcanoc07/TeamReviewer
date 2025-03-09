@@ -10,7 +10,7 @@ class Curso extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', // Profesor que crea el curso
+        'profesor', // Profesor que crea el curso
         'titulo',
         'descripcion',
         'codigo',
