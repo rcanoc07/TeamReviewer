@@ -43,6 +43,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // Relación con los cursos (muchos a muchos)
+    public function cursos()
+    {
+        return $this->belongsToMany(Curso::class, 'curso_user');
+    }
+
 }
 
 /**

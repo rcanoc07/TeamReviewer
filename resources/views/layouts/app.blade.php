@@ -61,7 +61,7 @@
                         </li>
                         <!-- Agregar enlace a las rúbricas -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('rubricas.index') }}">Rúbricas</a>
+                            <a class="nav-link" href="#">Rúbricas</a>
                         </li>
                     @elseif(auth()->user()->hasRole('alumno'))
                         <!-- Área personal del alumno, para ver los cursos en los que está registrado -->
