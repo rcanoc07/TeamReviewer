@@ -31,6 +31,6 @@ class Curso extends Model
     // Relación con los alumnos (muchos a muchos)
     public function alumnos()
     {
-        return $this->belongsToMany(User::class, 'curso_user');
+        return $this->belongsToMany(User::class, 'curso_users');
     }
 }
