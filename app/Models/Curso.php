@@ -17,9 +17,10 @@ class Curso extends Model
     ];
 
     // Relación con el profesor
+    // Modelo Curso
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'profesor');
     }
 
     // Relación con las rúbricas (un curso puede tener muchas rúbricas)
@@ -29,7 +30,7 @@ class Curso extends Model
     }
 
     // Relación con los alumnos (muchos a muchos)
-    public function alumnos()
+    public function participantes()
     {
         return $this->belongsToMany(User::class, 'curso_users');
     }

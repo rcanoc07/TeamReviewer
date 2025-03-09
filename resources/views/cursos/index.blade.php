@@ -18,7 +18,7 @@
 
                             <!-- Botones alineados a la izquierda con espacio entre ellos -->
                             <div class="d-flex mt-3 gap-3">
-                                <a href="#" class="btn btn-outline-primary btn-sm">Ver Más</a>
+                                <a href="{{ route('cursos.show', $curso->id) }}" class="btn btn-outline-primary btn-sm">Ver Más</a>
 
                                 <!-- Botón Editar -->
                                 <a href="#" class="btn btn-outline-warning btn-sm">Editar</a>

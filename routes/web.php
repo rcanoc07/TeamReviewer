@@ -92,3 +92,7 @@ Route::resource('rubricas', RubricaController::class)->middleware('auth');
 
 Route::get('/usuarios/{tipo}', [UsuarioController::class, 'index'])->name('usuarios.index');
 Route::get('/cursos', [CursoController::class, 'index'])->name('cursos.index');
+Route::get('/curso/{id}', [CursoController::class, 'show'])->name('cursos.show');
+Route::get('/cursos/{id}/participantes', [CursoController::class, 'participantes'])->name('cursos.participantes');
+Route::delete('/cursos/{curso}/participantes/{participante}', [CursoController::class, 'removeParticipante'])->name('cursos.remove_participante');
+Route::get('/cursos/{curso}/sobre', [CursoController::class, 'mostrarSobreCurso'])->name('cursos.sobre');
