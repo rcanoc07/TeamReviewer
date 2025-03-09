@@ -21,8 +21,8 @@
 
     <!-- Iconos de Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
-
 <body class="d-flex flex-column min-vh-100"> <!-- Cambio 1: Flexbox en el body -->
 <div id="app">
     <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
@@ -40,15 +40,15 @@
                     @if(auth()->user()->hasRole('admin'))
                         <!-- Todos los cursos existentes -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Cursos</a>
+                            <a class="nav-link" href="{{ route('cursos.index') }}">Cursos</a>
                         </li>
                         <!-- Todos los profesores registrados y también la posibilidad de crear un usuario (profesor) -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Profesores</a>
+                            <a class="nav-link" href="{{ route('usuarios.index', ['tipo' => 'profesor']) }}">Profesores</a>
                         </li>
                         <!-- Todos los alumnos registrados -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Alumnos</a>
+                            <a class="nav-link" href="{{ route('usuarios.index', ['tipo' => 'alumno']) }}">Alumnos</a>
                         </li>
                     @elseif(auth()->user()->hasRole('profesor'))
                         <!-- Formulario para crear un nuevo curso -->

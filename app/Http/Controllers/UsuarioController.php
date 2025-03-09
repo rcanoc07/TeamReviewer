@@ -11,23 +11,19 @@ class UsuarioController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index(Request $request)
+    public function index($tipo)
     {
-        //
-        if($request->busqueda) {
-            $filtro = $request->busqueda;
-        } else {
-            $filtro = "";
+        if (!in_array($tipo, ['alumno', 'profesor'])) {
+            abort(404);
         }
-//        $usuarios = User::where("email", "like", "%" . $filtro . "%")->paginate(5);
-        $usuarios = User::where("email", "like", "%" . $filtro . "%")->get();
-        return view("usuarios.todos", [
-            "usuarios" => $usuarios,
-            "busq" => $filtro
-        ]);
 
+        $usuarios = User::whereHas('roles', function ($query) use ($tipo) {
+            $query->where('name', $tipo);
+        })->get();
+
+        return view('usuarios.index', ['usuarios' => $usuarios, 'tipo' => $tipo]);
     }
 
     /**
@@ -89,7 +85,7 @@ class UsuarioController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
@@ -97,22 +93,4 @@ class UsuarioController extends Controller
         User::find($id)->delete();
         return back();
     }
-
-    /*
-    public function cambiarRol($id) {
-//        $rolusuarioapp = Role::where("name", "usuarioapp")->get();
-//        $roladmin = Role::where("name", "admin")->get();
-        $usuario = User::find($id);
-        if ($usuario->hasRole("usuarioapp"))
-        {
-            $usuario->removeRole("usuarioapp");
-            $usuario->assignRole("admin");
-        } else {
-            $usuario->removeRole("admin");
-            $usuario->assignRole("usuarioapp");
-        }
-        return back();
-    }
-
-    */
 }

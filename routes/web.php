@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AmigoController;
+use App\Http\Controllers\CursoController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\GrupoAmigoController;
 use App\Http\Controllers\GrupoController;
@@ -54,15 +55,7 @@ Route::group(['middleware' => ['role:admin']], function () {
 
 Route::group(['middleware' => ['auth']], function (){
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::get("grupos/{grupoid}/sortear", [SorteoController::class, 'sortear'])->name("grupos.sortear");
-    Route::get("grupos/{grupoid}/anularsorteo", [SorteoController::class, 'anularsorteo'])->name("grupos.anularsorteo");
-    Route::resource("grupos", GrupoController::class);
-    Route::resource('grupos.participantes',GrupoAmigoController::class);
-    Route::resource("amigos", AmigoController::class);
 });
-
-Route::get('grupos/{grupoid}/intromasiva', [IntromasivaController::class,"intro"])->name("grupos.intromasiva");
-Route::post('grupos/{grupoid}/store', [IntromasivaController::class, "store"])->name("grupos.storemasiva");
 
 Route::get('about', function () {
     return view("about.index");
@@ -70,11 +63,6 @@ Route::get('about', function () {
 
 Route::get('borrarusuario/{id}', [UsuarioController::class, "destroy"])->name("borrarusu");
 Route::get('cambiarrol/{id}', [UsuarioController::class, "cambiarRol"])->name("cambiarrol");
-
-
-
-Route::get('exportarusuarios', [ExcelController::class, "ExportarUsuariosXLS"]);
-Route::get('exportarpdf', [ExcelController::class, "ExportarPDF"]);
 
 
 
@@ -102,9 +90,5 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 //Rubricas
 Route::resource('rubricas', RubricaController::class)->middleware('auth');
 
-
-
-// ROLES
-use App\Http\Controllers\UserController;
-
-Route::post('/user/{id}/assign-role', [UserController::class, 'assignRoleToUser']);
+Route::get('/usuarios/{tipo}', [UsuarioController::class, 'index'])->name('usuarios.index');
+Route::get('/cursos', [CursoController::class, 'index'])->name('cursos.index');

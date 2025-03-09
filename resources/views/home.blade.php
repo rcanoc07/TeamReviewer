@@ -31,7 +31,7 @@
                                 <p class="text-muted">
                                     Visualiza y gestiona los cursos disponibles en la plataforma. Puedes editar su contenido y administrar la información de cada curso.
                                 </p>
-                                <a href="#" class="btn btn-primary">Gestionar Cursos</a>
+                                <a href="{{ route('cursos.index') }}" class="btn btn-primary">Gestionar Cursos</a>
                             </div>
                         </div>
 
@@ -43,7 +43,7 @@
                                 <p class="text-muted">
                                     Crea nuevos profesores, edita su información y visualiza la lista de docentes registrados en el sistema.
                                 </p>
-                                <a href="#" class="btn btn-secondary">Gestionar Profesores</a>
+                                <a href="{{ route('usuarios.index', ['tipo' => 'profesor']) }}" class="btn btn-secondary">Gestionar Profesores</a>
                             </div>
                         </div>
 
@@ -55,7 +55,7 @@
                                 <p class="text-muted">
                                     Gestiona la información de los alumnos y visualiza la lista de estudiantes registrados en la plataforma.
                                 </p>
-                                <a href="#" class="btn btn-success">Gestionar Alumnos</a>
+                                <a href="{{ route('usuarios.index', ['tipo' => 'alumno']) }}" class="btn btn-success">Gestionar Alumnos</a>
                             </div>
                         </div>
                     </div>
