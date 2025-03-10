@@ -70,7 +70,7 @@
                                 <i class="bi bi-journal-plus display-4 text-primary"></i>
                                 <h4 class="mt-3 fw-bold">Crear Curso</h4>
                                 <p class="text-muted">Crea un nuevo curso para tus alumnos.</p>
-                                <a href="#" class="btn btn-primary">Crear Curso</a>
+                                <a href="{{ route('cursos.create') }}" class="btn btn-primary">Crear Curso</a>
                             </div>
                         </div>
 
@@ -80,7 +80,7 @@
                                 <i class="bi bi-journal-text display-4 text-secondary"></i>
                                 <h4 class="mt-3 fw-bold">Mis Cursos</h4>
                                 <p class="text-muted">Gestiona los cursos en los que eres profesor.</p>
-                                <a href="#" class="btn btn-secondary">Ver Mis Cursos</a>
+                                <a href="{{ route('cursos.index') }}" class="btn btn-primary">Ver mis Cursos</a>
                             </div>
                         </div>
                     </div>
@@ -104,7 +104,7 @@
                                 <i class="bi bi-journal-bookmark display-4 text-success"></i>
                                 <h4 class="mt-3 fw-bold">Cursos Disponibles</h4>
                                 <p class="text-muted">Explora todos los cursos de la plataforma.</p>
-                                <a href="#" class="btn btn-success">Ver Cursos</a>
+                                <a href="{{ route('cursos.index') }}" class="btn btn-primary">Ver Cursos</a>
                             </div>
                         </div>
                     </div>

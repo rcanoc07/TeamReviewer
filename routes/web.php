@@ -100,3 +100,8 @@ Route::get('/curso/{id}', [CursoController::class, 'show'])->name('cursos.show')
 Route::get('/cursos/{id}/participantes', [CursoController::class, 'participantes'])->name('cursos.participantes');
 Route::delete('/cursos/{curso}/participantes/{participante}', [CursoController::class, 'removeParticipante'])->name('cursos.remove_participante');
 Route::get('/cursos/{curso}/sobre', [CursoController::class, 'mostrarSobreCurso'])->name('cursos.sobre');
+Route::middleware(['auth', 'role:profesor'])->group(function () {
+    Route::get('/cursos/create', [CursoController::class, 'create'])->name('cursos.create');
+    Route::post('/cursos', [CursoController::class, 'store'])->name('cursos.store');
+});
+
