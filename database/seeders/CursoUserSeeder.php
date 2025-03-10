@@ -28,7 +28,7 @@ class CursoUserSeeder extends Seeder
         // Asigna 8 alumnos aleatorios a cada curso
         foreach ($cursos as $curso) {
             $alumnosRandom = $alumnos->random(min(8, $alumnos->count())); // Si hay menos de 8, toma los disponibles
-            $curso->alumnos()->attach($alumnosRandom->pluck('id'));
+            $curso->participantes()->attach($alumnosRandom->pluck('id'));
         }
     }
 }
