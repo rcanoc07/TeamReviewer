@@ -33,9 +33,6 @@
                         @else
                             <p class="card-text text-muted">No se ha asignado un profesor a este curso.</p>
                         @endif
-
-                        <!-- Botón para regresar al listado -->
-                        <a href="{{ route('cursos.index') }}" class="btn btn-outline-secondary btn-sm mt-3">Volver al Listado</a>
                     </div>
                 </div>
             </div>

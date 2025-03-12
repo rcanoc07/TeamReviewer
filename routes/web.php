@@ -103,4 +103,9 @@ Route::middleware(['auth', 'role:profesor'])->group(function () {
     Route::get('/cursos/create', [CursoController::class, 'create'])->name('cursos.create');
     Route::post('/cursos', [CursoController::class, 'store'])->name('cursos.store');
 });
+Route::middleware(['auth', 'role:alumno'])->group(function () {
+    Route::get('/cursos/{areaPersonal}', [CursoController::class, 'indexAlumno'])
+        ->where('areaPersonal', '(0|1)') // Asegura que solo reciba 0 o 1 como parámetro
+        ->name('cursos.index');
+});
 

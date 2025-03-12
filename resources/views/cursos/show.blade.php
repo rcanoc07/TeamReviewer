@@ -23,8 +23,6 @@
 
                         <!-- Las rúblicas creadas por el profesor y si eres profesor que te salga un "Añadir rública" -->
 
-                        <!-- Botón para regresar al listado -->
-                        <a href="{{ route('cursos.index') }}" class="btn btn-outline-secondary btn-sm mt-3">Volver al Listado</a>
                     </div>
                 </div>
             </div>

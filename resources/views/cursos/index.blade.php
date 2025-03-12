@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-4 text-center">Cursos Disponibles</h1>
+        <h1 class="mb-4 text-center">Cursos</h1>
 
         <div class="row">
             @foreach ($cursos as $curso)
@@ -20,15 +20,17 @@
                             <div class="d-flex mt-3 gap-3">
                                 <a href="{{ route('cursos.show', $curso->id) }}" class="btn btn-outline-primary btn-sm">Ver Más</a>
 
-                                <!-- Botón Editar -->
-                                <a href="#" class="btn btn-outline-warning btn-sm">Editar</a>
+                                @if(!auth()->user()->hasRole('alumno'))
+                                    <!-- Botón Editar -->
+                                    <a href="#" class="btn btn-outline-warning btn-sm">Editar</a>
 
-                                <!-- Botón Borrar -->
-                                <form action="#" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres borrar este curso?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Borrar</button>
-                                </form>
+                                    <!-- Botón Borrar -->
+                                    <form action="#" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres borrar este curso?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Borrar</button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     </div>

@@ -94,7 +94,7 @@
                                 <i class="bi bi-person-square display-4 text-primary"></i>
                                 <h4 class="mt-3 fw-bold">Área Personal</h4>
                                 <p class="text-muted">Consulta tus cursos y avances.</p>
-                                <a href="#" class="btn btn-primary">Ir al Área Personal</a>
+                                <a href="{{ route('cursos.index', 1) }}" class="btn btn-primary">Ir al Área Personal</a>
                             </div>
                         </div>
 
@@ -104,7 +104,7 @@
                                 <i class="bi bi-journal-bookmark display-4 text-success"></i>
                                 <h4 class="mt-3 fw-bold">Cursos Disponibles</h4>
                                 <p class="text-muted">Explora todos los cursos de la plataforma.</p>
-                                <a href="{{ route('cursos.index') }}" class="btn btn-primary">Ver Cursos</a>
+                                <a href="{{ route('cursos.index', 0) }}" class="btn btn-primary">Ver Cursos</a>
                             </div>
                         </div>
                     </div>

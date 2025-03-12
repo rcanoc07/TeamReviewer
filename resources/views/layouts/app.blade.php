@@ -66,11 +66,11 @@
                     @elseif(auth()->user()->hasRole('alumno'))
                         <!-- Área personal del alumno, para ver los cursos en los que está registrado -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Área personal</a>
+                            <a class="nav-link" href="{{ route('cursos.index', 1) }}">Área personal</a>
                         </li>
                         <!-- Todos los cursos que se encuentran en la aplicación -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Cursos</a>
+                            <a class="nav-link" href="{{ route('cursos.index', 0) }}">Cursos</a>
                         </li>
                     @endif
                 </ul>

@@ -30,6 +30,26 @@ class CursoController extends Controller
         return view('cursos.index', compact('cursos'));
     }
 
+    public function indexAlumno($areaPersonal)
+    {
+        $usuario = auth()->user();
+        $areaPersonal = filter_var($areaPersonal, FILTER_VALIDATE_BOOLEAN); // Convierte a booleano correctamente
+
+        if ($usuario->hasRole('alumno') && $areaPersonal == false ) {
+            // Alumno ve todos los cursos
+            $cursos = Curso::all();
+        } elseif ($usuario->hasRole('alumno') && $areaPersonal == true ) {
+            // Alumno ve solo los cursos en los que está inscrito
+            $cursos = $usuario->cursos; // Asegúrate de tener la relación en el modelo User
+        } else {
+            // Si el usuario no tiene un rol válido, devolvemos una lista vacía
+            $cursos = collect();
+        }
+
+        return view('cursos.index', compact('cursos'));
+    }
+
+
     /**
      * Muestra el formulario para crear un nuevo curso.
      */

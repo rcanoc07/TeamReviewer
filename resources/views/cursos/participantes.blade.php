@@ -34,20 +34,19 @@
                                                 <p class="card-text">{{ $participante->email }}</p>
                                             </div>
 
-                                            <!-- Botón para sacar al participante del curso -->
-                                            <form action="{{ route('cursos.remove_participante', [$curso->id, $participante->id]) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres sacar a este participante del curso?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
-                                            </form>
+                                            @if(auth()->user()->hasRole('profesor'))
+                                                <!-- Botón para sacar al participante del curso -->
+                                                <form action="{{ route('cursos.remove_participante', [$curso->id, $participante->id]) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres sacar a este participante del curso?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
-
-                        <!-- Botón para regresar al listado -->
-                        <a href="{{ route('cursos.index') }}" class="btn btn-outline-secondary btn-sm mt-3">Volver al Listado</a>
                     </div>
                 </div>
             </div>
