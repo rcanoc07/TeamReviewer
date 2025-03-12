@@ -110,3 +110,9 @@ Route::middleware(['auth', 'role:alumno'])->group(function () {
         ->name('cursos.indexAlumno');
 });
 
+Route::get('/rubricas/{id}/responder', [RubricaController::class, 'mostrarFormularioRespuesta'])->name('rubricas.responder.form');
+Route::post('/rubricas/{id}/responder', [RubricaController::class, 'responder'])->name('rubricas.responder');
+Route::get('/rubricas/create/{curso_id}', [RubricaController::class, 'create'])->name('rubricas.create');
+
+Route::get('/rubricas/{id}/responder', [RubricaController::class, 'mostrarFormularioRespuesta'])->name('rubricas.responder');
+Route::post('/rubricas/{id}/responder', [RubricaController::class, 'guardarRespuesta'])->name('rubricas.guardarRespuesta');

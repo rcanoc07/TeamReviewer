@@ -295,7 +295,83 @@ class RubricaController extends Controller
     public function mostrarFormularioRespuesta($id)
     {
         $rubrica = Rubrica::findOrFail($id);
-        return view('responder_rubrica', compact('rubrica'));
+        return view('rubricas.responder', compact('rubrica'));
+    }
+
+
+    public function guardarRespuesta(Request $request, $id)
+    {
+        // Validación de los datos
+        $request->validate([
+            'respuestas' => 'required|array',
+            'respuestas.*.puntuacion' => 'required|string',
+        ]);
+
+        // Recuperar la rúbrica
+        $rubrica = Rubrica::findOrFail($id);
+
+        // Guardar la respuesta en la base de datos
+        $respuestaAlumno = Respuesta::create([
+            'rubrica_id' => $rubrica->id,
+            'alumno_id' => Auth::id(),
+            'respuestas' => json_encode($request->respuestas),
+        ]);
+
+        // Formatear las preguntas y respuestas para la IA
+        $preguntas = json_decode($respuestaAlumno->respuestas, true);
+        $mensajeParaIA = "Evalúa las siguientes respuestas del alumno y proporciona una nota numérica del 1 al 10 basada en la claridad y precisión de las respuestas. Responde únicamente con la evaluación y la nota en el siguiente formato:\n\n";
+        $mensajeParaIA .= "**Evaluación:** [Texto breve de la evaluación]\n";
+        $mensajeParaIA .= "**Nota:** [Nota del 1 al 10]\n\n";
+        $mensajeParaIA .= "Preguntas y respuestas del alumno:\n";
+
+        foreach ($preguntas as $index => $pregunta) {
+            $mensajeParaIA .= "Pregunta " . ($index + 1) . ": " . $pregunta['pregunta'] . "\n";
+            $mensajeParaIA .= "Respuesta del alumno: " . $pregunta['puntuacion'] . "\n\n";
+        }
+
+        // Realizar la petición a la API de OpenRouter
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+// si no funciona es porque la key ha expirado, asi es que, sacar una nueva
+            'Authorization' => 'Bearer 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',
+        ])->post('https://openrouter.ai/api/v1/chat/completions', [
+            'model' => 'deepseek/deepseek-r1:free',
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => $mensajeParaIA,
+                ],
+            ],
+        ]);
+
+        // Verificar si la petición fue exitosa
+        if ($response->successful()) {
+            $respuestaIA = $response->json();
+
+            // Extraer la evaluación y la nota de la respuesta de la IA
+            $evaluacionCompleta = $respuestaIA['choices'][0]['message']['content'] ?? 'No se recibió una evaluación válida.';
+
+            // Extraer la evaluación y la nota usando expresiones regulares
+            preg_match('/\*\*Evaluación:\*\* (.*?)\n/', $evaluacionCompleta, $matchesEvaluacion);
+            preg_match('/\*\*Nota:\*\* (\d+)/', $evaluacionCompleta, $matchesNota);
+
+
+            $evaluacion = $matchesEvaluacion[1] ?? 'Evaluación no disponible';
+            $nota = $matchesNota[1] ?? 0; // Si no se encuentra la nota, se asigna 0
+            $nota = max(1, min(10, (int)$nota));
+            // Guardar la corrección en la base de datos
+            $correccion = Correccion::create([
+                'respuesta_id' => $respuestaAlumno->id,
+                'evaluacion' => $evaluacion,
+                'nota' => $nota,
+            ]);
+
+            return redirect()->route('cursos.show', $rubrica->curso_id)->with('success', 'Respuesta y corrección enviadas correctamente.');
+        } else {
+            // Manejar el error en caso de que la petición no sea exitosa
+            logger('Error en la petición a la API:', ['error' => $response->body()]);
+            return redirect()->route('cursos.show', $rubrica->curso_id)->with('error', 'Error al enviar la respuesta a la IA.');
+        }
     }
 }
 

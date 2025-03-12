@@ -47,6 +47,7 @@
                                             <td>{{ $rubrica->codigo }}</td>
                                             <td>{{ $rubrica->titulo }}</td>
                                             <td>{{ Str::limit($rubrica->descripcion, 50) }}</td>
+
                                             <td>
                                                 <a href="{{ route('rubricas.show', $rubrica->id) }}" class="btn btn-info btn-sm">Ver</a>
                                                 @if (Auth::user()->hasRole('profesor'))
@@ -56,6 +57,8 @@
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                                                     </form>
+                                                @else
+                                                    <a href="{{ route('rubricas.responder', $rubrica->id) }}" class="btn btn-success btn-sm">Responder</a>
                                                 @endif
                                             </td>
                                         </tr>
