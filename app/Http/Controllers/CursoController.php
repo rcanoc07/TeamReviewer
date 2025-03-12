@@ -19,9 +19,6 @@ class CursoController extends Controller
         } elseif ($usuario->hasRole('profesor')) {
             // Profesor ve solo sus cursos
             $cursos = Curso::where('profesor', $usuario->id)->get();
-        } elseif ($usuario->hasRole('alumno')) {
-            // Alumno ve solo los cursos en los que está inscrito
-            $cursos = $usuario->cursos; // Asegúrate de tener la relación en el modelo User
         } else {
             // Si el usuario no tiene un rol válido, devolvemos una lista vacía
             $cursos = collect();
