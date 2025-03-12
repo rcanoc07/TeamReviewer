@@ -93,7 +93,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 //Rubricas
 Route::resource('rubricas', RubricaController::class)->middleware('auth');
-
 Route::get('/usuarios/{tipo}', [UsuarioController::class, 'index'])->name('usuarios.index');
 Route::get('/cursos', [CursoController::class, 'index'])->name('cursos.index');
 Route::get('/curso/{id}', [CursoController::class, 'show'])->name('cursos.show');
