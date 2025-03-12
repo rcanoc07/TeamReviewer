@@ -68,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perfil', [UsuarioController::class, 'perfil'])->name('perfil');
     Route::put('/perfil', [UsuarioController::class, 'updatePerfil'])->name('perfil.update');
 });
+Route::post('/cursos/{id}/inscribirse', [CursoController::class, 'inscribirse'])->name('cursos.inscribirse');
 
 
 //**********************************************************************************************************//

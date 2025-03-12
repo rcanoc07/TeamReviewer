@@ -16,11 +16,12 @@
                             <!-- Descripción -->
                             <p class="card-text text-muted">{{ $curso->descripcion }}</p>
 
-                            <!-- Botones alineados a la izquierda con espacio entre ellos -->
+                            <!-- Acciones -->
                             <div class="d-flex mt-3 gap-3">
-                                <a href="{{ route('cursos.show', $curso->id) }}" class="btn btn-outline-primary btn-sm">Ver Más</a>
+                                @if(auth()->user()->hasRole('profesor') || auth()->user()->hasRole('admin'))
+                                    <!-- Botón Ver Más -->
+                                    <a href="{{ route('cursos.show', $curso->id) }}" class="btn btn-outline-primary btn-sm">Ver Más</a>
 
-                                @if(!auth()->user()->hasRole('alumno'))
                                     <!-- Botón Editar -->
                                     <a href="#" class="btn btn-outline-warning btn-sm">Editar</a>
 
@@ -30,6 +31,21 @@
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-outline-danger btn-sm">Borrar</button>
                                     </form>
+
+                                @elseif(auth()->user()->hasRole('alumno'))
+                                    @if($curso->participantes->contains(auth()->user()->id))
+                                        <!-- Si el alumno está inscrito -->
+                                        <a href="{{ route('cursos.show', $curso->id) }}" class="btn btn-outline-primary btn-sm">Acceder al Curso</a>
+                                    @else
+                                        <!-- Si no está inscrito, mostrar el formulario para inscribirse -->
+                                        <form action="{{ route('cursos.inscribirse', $curso->id) }}" method="POST">
+                                            @csrf
+                                            <div class="input-group">
+                                                <input type="text" name="codigo" class="form-control" placeholder="Código del curso" required>
+                                                <button type="submit" class="btn btn-success btn-sm">Inscribirse</button>
+                                            </div>
+                                        </form>
+                                    @endif
                                 @endif
                             </div>
                         </div>

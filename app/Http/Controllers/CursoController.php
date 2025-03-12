@@ -126,6 +126,26 @@ class CursoController extends Controller
         return view('cursos.sobre', compact('curso'));
     }
 
+    public function inscribirse(Request $request, $id)
+    {
+        // Validar que se ingrese el código
+        $request->validate([
+            'codigo' => 'required|string'
+        ]);
+
+        // Buscar el curso
+        $curso = Curso::findOrFail($id);
+
+        // Verificar si el código es correcto
+        if ($curso->codigo !== $request->codigo) {
+            return back()->withErrors(['codigo' => 'El código ingresado es incorrecto.']);
+        }
+
+        // Inscribir al alumno en el curso
+        $curso->participantes()->attach(auth()->id());
+
+        return redirect()->route('cursos.show', $curso->id)->with('success', 'Te has inscrito correctamente al curso.');
+    }
 
 
 
