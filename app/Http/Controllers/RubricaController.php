@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Correccion;
+use App\Models\Respuesta;
 use Illuminate\Http\Request;
 use App\Models\Rubrica;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class RubricaController extends Controller
 {
@@ -121,4 +124,186 @@ class RubricaController extends Controller
         $rubrica->delete();
         return redirect()->route('rubricas.index')->with('success', 'Rúbrica eliminada.');
     }
+
+
+
+    ////MIAU
+    ///
+
+    public function evaluarCodigo(Request $request, $id)
+    {
+        // Validación de los datos
+        $request->validate([
+            'codigo' => 'required|string',
+            'alumno_id' => 'required|integer|exists:users,id',
+            'curso_id' => 'required|integer|exists:cursos,id',
+        ]);
+
+        // Recuperar la rúbrica seleccionada
+        $rubrica = Rubrica::findOrFail($id);
+        $preguntas = json_decode($rubrica->preguntas, true);
+
+        // Crear el mensaje para la API de OpenRouter
+        $mensaje = "Por favor, evalúa el siguiente código según la rúbrica proporcionada:\n\n";
+        $mensaje .= "Código del alumno:\n```\n" . $request->codigo . "\n```\n\n";
+        $mensaje .= "Rúbrica:\n";
+        foreach ($preguntas as $pregunta) {
+            $mensaje .= "- " . $pregunta['pregunta'] . " (Puntuación máxima: " . $pregunta['puntuacion'] . ")\n";
+        }
+        $mensaje .= "\nProporciona una evaluación detallada para cada pregunta.";
+
+        // URL de la API de OpenRouter
+        $url = 'https://openrouter.ai/api/v1/chat/completions';
+
+        // Datos que se enviarán en la solicitud
+        $data = [
+            'model' => 'deepseek/deepseek-r1:free',
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => $mensaje,
+                ],
+            ],
+        ];
+
+        // Encabezados de la solicitud
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer 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',
+        ];
+
+        // Enviar la solicitud HTTP POST a la API
+        $response = Http::withHeaders($headers)->post($url, $data);
+
+        // Verificar si la solicitud fue exitosa
+        if ($response->successful()) {
+            // Decodificar la respuesta JSON
+            $responseData = $response->json();
+
+            // Procesar la respuesta de la API
+            $respuestaIA = $responseData['choices'][0]['message']['content'] ?? 'No se recibió una respuesta válida.';
+
+            // Parsear la respuesta para generar una plantilla de corrección
+            $correccion = $this->parsearRespuesta($respuestaIA, $preguntas);
+
+            // Calcular la nota (sobre 10)
+            $nota = $this->calcularNota($correccion['preguntas']);
+
+            // Guardar la corrección en la base de datos
+            $correccionGuardada = Correccion::create([
+                'profesor_id' => Auth::id(), // ID del profesor autenticado
+                'rubrica_id' => $rubrica->id,
+                'alumno_id' => $request->alumno_id,
+                'curso_id' => $request->curso_id, // ID del curso
+                'nota' => $nota,
+                'evaluacion_general' => json_encode($correccion['evaluacion_general']),
+                'preguntas' => json_encode($correccion['preguntas']),
+            ]);
+
+            // Retornar la corrección
+            return response()->json([
+                'success' => true,
+                'correccion' => $correccion,
+                'nota' => $nota,
+                'correccion_id' => $correccionGuardada->id,
+            ]);
+        } else {
+            // Manejar el error en caso de que la solicitud no sea exitosa
+            return response()->json([
+                'success' => false,
+                'error' => 'Error al comunicarse con la API de OpenRouter.',
+            ], 500);
+        }
+    }
+
+    private function calcularNota($preguntas)
+    {
+        $puntuacionTotal = 0;
+        $puntuacionMaxima = 0;
+
+        foreach ($preguntas as $pregunta) {
+            $puntuacionTotal += $pregunta['puntuacion_obtenida'] ?? 0;
+            $puntuacionMaxima += $pregunta['puntuacion_maxima'];
+        }
+
+        // Calcular la nota sobre 10
+        return ($puntuacionTotal / $puntuacionMaxima) * 10;
+    }
+
+    private function parsearRespuesta($respuestaIA, $preguntas)
+    {
+        // Plantilla de corrección
+        $correccion = [
+            'evaluacion_general' => '',
+            'preguntas' => [],
+        ];
+
+        // Extraer la evaluación general
+        $correccion['evaluacion_general'] = $respuestaIA;
+
+        // Asignar la respuesta de la IA a cada pregunta
+        foreach ($preguntas as $index => $pregunta) {
+            $correccion['preguntas'][] = [
+                'pregunta' => $pregunta['pregunta'],
+                'puntuacion_maxima' => $pregunta['puntuacion'],
+                'respuesta' => $respuestaIA, // Aquí puedes personalizar cómo extraer la respuesta para cada pregunta
+            ];
+        }
+
+        return $correccion;
+    }
+
+    public function responder(Request $request, $id)
+    {
+        // Validación de los datos
+        $request->validate([
+            'respuestas' => 'required|array',
+            'respuestas.*.puntuacion' => 'required|integer|min:0',
+            'comentario_alumno' => 'nullable|string',
+        ]);
+
+        // Recuperar la rúbrica
+        $rubrica = Rubrica::findOrFail($id);
+
+        // Calcular la nota total
+        $notaTotal = 0;
+        $preguntas = json_decode($rubrica->preguntas, true);
+
+        foreach ($request->respuestas as $index => $respuesta) {
+            $puntuacionMaxima = $preguntas[$index]['puntuacion'];
+            $puntuacionAlumno = $respuesta['puntuacion'];
+
+            // Asegurarse de que la puntuación no exceda el máximo
+            if ($puntuacionAlumno > $puntuacionMaxima) {
+                return back()->withErrors(['respuestas.' . $index . '.puntuacion' => 'La puntuación no puede ser mayor que ' . $puntuacionMaxima]);
+            }
+
+            $notaTotal += $puntuacionAlumno;
+        }
+
+        // Guardar la respuesta en la base de datos
+        $respuestaAlumno = Respuesta::create([
+            'rubrica_id' => $rubrica->id,
+            'alumno_id' => Auth::id(),
+            'respuestas' => json_encode($request->respuestas),
+            'comentario_alumno' => $request->comentario_alumno,
+            'nota' => $notaTotal,
+        ]);
+
+        return redirect()->route('rubricas.show', $rubrica->id)->with('success', 'Respuesta enviada correctamente.');
+    }
+    public function mostrarFormularioRespuesta($id)
+    {
+        $rubrica = Rubrica::findOrFail($id);
+        return view('responder_rubrica', compact('rubrica'));
+    }
 }
+
+/*
+
+curl -X POST http://192.168.56.5/api/evaluar-codigo \
+  -H "Content-Type: application/json" \
+  -d '{
+    "codigo": "two plus two"
+  }'
+ * */

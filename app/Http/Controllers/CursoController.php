@@ -88,9 +88,10 @@ class CursoController extends Controller
     {
         // Obtener el curso por su ID
         $curso = Curso::findOrFail($id);
+        $rubricas = $curso->rubricas;
 
         // Pasar los detalles del curso a la vista
-        return view('cursos.show', compact('curso'));
+        return view('cursos.show', compact('curso', 'rubricas'));
     }
 
     public function participantes($id)

@@ -21,8 +21,56 @@
                         <!-- Línea divisoria -->
                         <hr class="my-4">
 
-                        <!-- Las rúblicas creadas por el profesor y si eres profesor que te salga un "Añadir rública" -->
+                        <!-- Mostrar las rúbricas disponibles -->
+                        <h3 class="mb-3">Rúbricas Disponibles</h3>
 
+                        @if ($rubricas->isEmpty())
+                            <div class="alert alert-info">
+                                No hay rúbricas disponibles para este curso.
+                            </div>
+                        @else
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Código</th>
+                                        <th>Título</th>
+                                        <th>Descripción</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach ($rubricas as $rubrica)
+                                        <tr>
+                                            <td>{{ $rubrica->id }}</td>
+                                            <td>{{ $rubrica->codigo }}</td>
+                                            <td>{{ $rubrica->titulo }}</td>
+                                            <td>{{ Str::limit($rubrica->descripcion, 50) }}</td>
+                                            <td>
+                                                <a href="{{ route('rubricas.show', $rubrica->id) }}" class="btn btn-info btn-sm">Ver</a>
+                                                @if (Auth::user()->hasRole('profesor'))
+                                                    <a href="{{ route('rubricas.edit', $rubrica->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                                    <form action="{{ route('rubricas.destroy', $rubrica->id) }}" method="POST" style="display:inline-block;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                                    </form>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+
+                        <!-- Botón para añadir rúbrica (solo para profesores) -->
+                        @if (Auth::user()->hasRole('profesor'))
+                            <div class="mt-4">
+                                <a href="{{ route('rubricas.create', ['curso_id' => $curso->id]) }}" class="btn btn-primary">Añadir Rúbrica</a>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
