@@ -48,7 +48,7 @@ class RubricaController extends Controller
 
         // Crear una nueva rúbrica
         $rubrica = new Rubrica();
-        $rubrica->user_id = Auth::id();
+        $rubrica->curso_id = Auth::id();
         $rubrica->codigo = $request->codigo;
         $rubrica->titulo = $request->titulo;
         $rubrica->descripcion = $request->descripcion;
