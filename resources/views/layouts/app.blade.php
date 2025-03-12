@@ -53,11 +53,11 @@
                     @elseif(auth()->user()->hasRole('profesor'))
                         <!-- Formulario para crear un nuevo curso -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Crear curso</a>
+                            <a class="nav-link" href="{{ route('cursos.create') }}">Crear curso</a>
                         </li>
                         <!-- Listado de todos los cursos en la base de datos -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Mis cursos</a>
+                            <a class="nav-link" href="{{ route('cursos.index') }}">Mis cursos</a>
                         </li>
                         <!-- Agregar enlace a las rúbricas -->
                         <li class="nav-item">
