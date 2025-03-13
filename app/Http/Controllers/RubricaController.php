@@ -333,7 +333,7 @@ class RubricaController extends Controller
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
 // si no funciona es porque la key ha expirado, asi es que, sacar una nueva
-            'Authorization' => 'Bearer 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',
+            'Authorization' => 'Bearer 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',
         ])->post('https://openrouter.ai/api/v1/chat/completions', [
             'model' => 'deepseek/deepseek-r1:free',
             'messages' => [
