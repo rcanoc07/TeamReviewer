@@ -14,7 +14,7 @@
                         <div class="d-flex justify-content-center gap-3 mb-4">
                             <a href="{{ route('cursos.show', $curso->id) }}" class="btn btn-outline-primary btn-sm">Curso</a>
                             <a href="{{ route('cursos.participantes', $curso->id) }}" class="btn btn-outline-success btn-sm">Participantes</a>
-                            <a href="#" class="btn btn-outline-warning btn-sm">Calificaciones</a>
+                            <a href="{{ route('correcciones.show', $curso->id) }}" class="btn btn-outline-warning btn-sm">Calificaciones</a>
                             <a href="{{ route('cursos.sobre', $curso->id) }}" class="btn btn-outline-info btn-sm">Sobre el curso</a>
                         </div>
 

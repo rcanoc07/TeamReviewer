@@ -116,3 +116,5 @@ Route::get('/rubricas/create/{curso_id}', [RubricaController::class, 'create'])-
 
 Route::get('/rubricas/{id}/responder', [RubricaController::class, 'mostrarFormularioRespuesta'])->name('rubricas.responder');
 Route::post('/rubricas/{id}/responder', [RubricaController::class, 'guardarRespuesta'])->name('rubricas.guardarRespuesta');
+
+Route::get('/cursos/{curso}/correcciones', [CursoController::class, 'calificaciones'])->name('correcciones.show');

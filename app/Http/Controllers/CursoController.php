@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Correccion;
 use App\Models\Curso;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -146,7 +147,24 @@ class CursoController extends Controller
     }
 
 
+    public function calificaciones($cursoId)
+    {
+        // Obtener el curso
+        $curso = Curso::findOrFail($cursoId);
 
+        // Obtener todas las correcciones relacionadas con las respuestas de este curso
+        $correcciones = Correccion::whereHas('respuesta', function ($query) use ($cursoId) {
+            $query->whereHas('rubrica', function ($query) use ($cursoId) {
+                $query->where('curso_id', $cursoId);
+            });
+        })->with(['respuesta.alumno', 'respuesta.rubrica'])->get();
+
+        // Pasar los datos a la vista
+        return view('correcciones.show', [
+            'curso' => $curso,
+            'correcciones' => $correcciones,
+        ]);
+    }
 
 
 
